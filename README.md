@@ -95,7 +95,7 @@ Now you are ready to go, start the server with:
 
 	python SiriServer.py
 	
-You don't need to run it as root, as we use https port 4443.
+You don't need to run it as root, as we use https port 443.
 If you want to use another port use:
 
 	python SiriServer.py --port [PORTNUM]
@@ -120,8 +120,8 @@ Option B: ToDo
 
 **I cannot get a connection from device to server**
 
-Do you access your server over the internet? You need to setup your firewall and NAT to allow traffic for tcp port 4443 directed to your server
-Do you have a local firewall on the machine running the server? Also check if tcp port 4443 is allowed for incomming connections
+Do you access your server over the internet? You need to setup your firewall and NAT to allow traffic for tcp port 443 directed to your server
+Do you have a local firewall on the machine running the server? Also check if tcp port 443 is allowed for incomming connections
 You must also make sure to setup the corret server and port in the spire configuration:
 
 	https://server.domain:PORT
@@ -137,15 +137,15 @@ Can I somehow verify the correct certificate? YES!
 
 start siriServer.py, then take your ca.pem you think belongs to your servers certificate and run:
 
-	 echo | openssl s_client -connect [DOMAIN]:4443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | openssl verify -CAfile keys/ca.pem 
+	 echo | openssl s_client -connect [DOMAIN]:443 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | openssl verify -CAfile keys/ca.pem 
 Make sure to replace [DOMAIN] with the actual domain of the machine running siriServer.py (e.g. an IP address)
 If your ca.pem matches your server certificate you should see `stdin: OK` as output!
 
 OK, what else?
 We can also setup a small test server using openssl to check if SSL is working (and to check if the iPhone correctly validates the server certificate):
 
-	openssl s_server -cert keys/server.crt -key keys/server.key -accept 4443 -state
-When you run this (SiriServer should NOT run) it opens a basis server on port 4443 using your servers certificate.
+	openssl s_server -cert keys/server.crt -key keys/server.key -accept 443 -state
+When you run this (SiriServer should NOT run) it opens a basis server on port 443 using your servers certificate.
 
 Now you can connect with your iPhone as if you would use Siri (of course Siri won't work, we are just testing the SSL layer)
 It should output something like this, note the Ace http request near the end:

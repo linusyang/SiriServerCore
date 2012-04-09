@@ -93,13 +93,11 @@ ROOT_CA_KEY_FILE = "keys/cakey.pem"
 SERVER_CERT_FILE = "keys/server.crt"
 SERVER_KEY_FILE = "keys/server.key"
 
-def create_self_signed_cert():
+def create_self_signed_cert(customHostname):
     
-    if not exists(SERVER_CERT_FILE) or not exists(SERVER_KEY_FILE) or not exists(ROOT_CA_CERT_FILE):
-
-        print "I could not find valid certificates. I will now guide you through the process of creating some."
+    if (customHostname != None) or not exists(SERVER_CERT_FILE) or not exists(SERVER_KEY_FILE) or not exists(ROOT_CA_CERT_FILE):
         
-        print "I will create a Certification Authority (CA) first"
+        print "I will create a Certification Authority (CA)"
         # create a key pair
         ca_key = crypto.PKey()
         ca_key.generate_key(crypto.TYPE_RSA, 2048)
@@ -152,16 +150,20 @@ def create_self_signed_cert():
         
         hostname = gethostname()
         print "We need to set the correct address of this machine in the certificate."
-        print "I will now query your system for its name. But it might be that you want to use a DNS name I cannot find.\n"
-        print "-------- IMPORTANT ----------"
-        print "Your system tells me that your hostname/IP is: {0}".format(hostname)
-        sys.stdout.write("Do you want to use this information (y/n): ")
-        answer = sys.stdin.readline().lower()
-        if "no" in answer or "n" in answer:
-            sys.stdout.write("Okay what do you want the hostname to be: ")
-            hostname = sys.stdin.readline().strip()
-            print "Okay thanks I will now be using {0}".format(hostname)
-            
+        print "I will now query your system for its name.\nBut it might be that you want to use a DNS name I cannot find.\n"
+        print "------------ IMPORTANT ------------"
+        if customHostname == None:
+            print "Your system tells me that your hostname/IP is: {0}".format(hostname)
+            sys.stdout.write("Do you want to use this information (y/n): ")
+            answer = sys.stdin.readline().lower()
+            if "no" in answer or "n" in answer:
+                sys.stdout.write("Okay what do you want the hostname to be: ")
+                hostname = sys.stdin.readline().strip()
+                print "Okay thanks I will now be using {0}".format(hostname)
+        else:
+            hostname = customHostname
+            print "You have set the hostname/IP: {0}".format(hostname)
+
         cert.get_subject().CN = hostname
         cert.set_serial_number(1000)
         cert.gmtime_adj_notBefore(0)
@@ -189,22 +191,25 @@ def create_self_signed_cert():
         fhandle.close()
         
         print """
-        \t\t\t ------------ IMPORTANT ------------\n\n
-        \t\tAll certificates have been generated... You must now install the CA certificate on your device\n\n
-        \t\tThe file is located at keys/ca.pem in your SiriServer root\n\n
-        \t\tMake sure to uninstall an old CA certificate first"\n\n
-        \t\tTHE CERTIFICATES MUST MATCH! IF YOU DID THIS HERE BEFORE, THE OLD ca.pem WON'T WORK ANYMORE\n
-        \t\tYou can just EMail the keys/ca.pem file to yourself\n
-        """
+------------ IMPORTANT ------------
+All certificates have been generated...
+You must now install the CA certificate on your device
+The file is located at keys/ca.pem in your SiriServer root
+Make sure to uninstall an old CA certificate first
+THE CERTIFICATES MUST MATCH! IF YOU DID THIS HERE BEFORE, 
+THE OLD ca.pem WON'T WORK ANYMORE
+You can just EMail the keys/ca.pem file to yourself
+"""
     
         
 def main():
     
     parser = OptionParser()
     parser.add_option('-l', '--loglevel', default='info', dest='logLevel', help='This sets the logging level you have these options: debug, info, warning, error, critical \t\tThe standard value is info')
-    parser.add_option('-p', '--port', default=443, type='int', dest='port', help='This options lets you use a custom port instead of 443 (use a port > 1024 to run as non root user)')
+    parser.add_option('-p', '--port', default=443, type='int', dest='port', help='This option lets you use a custom port instead of 443 (use a port > 1024 to run as non root user)')
     parser.add_option('--logfile', default=None, dest='logfile', help='Log to a file instead of stdout.')
     parser.add_option('-m', '--maxConnections', default=None, type='int', dest='maxConnections', help='You can limit the number of maximum simultaneous connections with that switch')
+    parser.add_option('-f', '--forcebuild', default=None, dest='customHostname', help='This option will force rebuild the certificate using the custom hostname and exit.')
     (options, _) = parser.parse_args()
     
     x = logging.getLogger()
@@ -219,7 +224,9 @@ def main():
     h.setFormatter(f)
     x.addHandler(h)
     
-    create_self_signed_cert()
+    create_self_signed_cert(options.customHostname)
+    if options.customHostname != None:
+        return
     
     try: 
         from twisted.internet import epollreactor
