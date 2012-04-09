@@ -4,6 +4,6 @@
 # apiName="APIKEY"
 
 wolframalpha = ""
-wordnik = ""
-wundergrounds = ""
-
+wunderground = ""
+googleplace = ""
+bing = ""

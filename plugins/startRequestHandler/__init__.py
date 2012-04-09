@@ -6,8 +6,8 @@ from siriObjects.systemObjects import ResultCallback
 from siriObjects.websearchObjects import WebSearch
 
 
-webSearchAnswerText = {"de": u"Das Web nach {0} durchsuchen …", "en": u"Searching the web for {0} …", "fr": u"Searching the web for {0} …"}
-webSearchAnswerFailureText = {"de": u"Entschuldigung, Ich, ich kann jetzt nicht das Web durchsuchen.", "en": u"Sorry but I cannot search the web right now.", "fr": u"Sorry but I cannot search the web right now."}
+webSearchAnswerText = {"de": u"Das Web nach {0} durchsuchen …", "en": u"Searching the web for {0} …", "fr": u"Searching the web for {0} …", "zh": u"正在搜索 {0} …"}
+webSearchAnswerFailureText = {"de": u"Entschuldigung, Ich, ich kann jetzt nicht das Web durchsuchen.", "en": u"Sorry but I cannot search the web right now.", "fr": u"Sorry but I cannot search the web right now.", "zh": u"抱歉我现在无法搜索网页。"}
 class startRequestHandler(Plugin):    
 
     #we should provide a shortcut for this....
@@ -16,6 +16,7 @@ class startRequestHandler(Plugin):
     @register("en-AU", u"\^webSearchQuery\^=\^(.+)\^\^webSearchConfirmation\^=\^(.+)\^")
     @register("en-GB", u"\^webSearchQuery\^=\^(.+)\^\^webSearchConfirmation\^=\^(.+)\^")
     @register("fr-FR", u"\^webSearchQuery\^=\^(.+)\^\^webSearchConfirmation\^=\^(.+)\^")
+    @register("zh-CN", u"\^webSearchQuery\^=\^(.+)\^\^webSearchConfirmation\^=\^(.+)\^")
     def webSearchConfirmation(self, speech, language, regMatched):
         webSearchQuery = regMatched.group(1)
         #webSearchConfirmation = regMatched.group(2)
@@ -25,7 +26,7 @@ class startRequestHandler(Plugin):
         resultCallback1View = UIAddViews(refId="")
         resultCallback1ViewView = UIAssistantUtteranceView()
         resultCallback1ViewView.dialogIdentifier="WebSearch#initiateWebSearch"
-        resultCallback1ViewView.text=webSearchAnswerText[lang].format(u"„{0}“".format(webSearchQuery))
+        resultCallback1ViewView.text=webSearchAnswerText[lang].format(u"“{0}”".format(webSearchQuery))
         resultCallback1ViewView.speakableText=webSearchAnswerText[lang].format(webSearchQuery)
         resultCallback1View.views = [resultCallback1ViewView]
         

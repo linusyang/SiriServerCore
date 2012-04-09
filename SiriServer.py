@@ -109,9 +109,9 @@ def create_self_signed_cert():
         CAcert.get_subject().C = "DE"
         CAcert.get_subject().ST = "NRW"
         CAcert.get_subject().L = "Aachen"
-        CAcert.get_subject().O = "SiriServer by Eichhoernchen"
+        CAcert.get_subject().O = "Siri Server"
         CAcert.get_subject().OU = "SiriServer Certificate Authority"
-        CAcert.get_subject().CN = "SiriServer Fake CA Certificate"
+        CAcert.get_subject().CN = "SiriServer CA"
         CAcert.set_serial_number(1000)
         CAcert.gmtime_adj_notBefore(0)
         CAcert.gmtime_adj_notAfter(10*365*24*60*60)
@@ -147,7 +147,7 @@ def create_self_signed_cert():
         cert.get_subject().C = "DE"
         cert.get_subject().ST = "NRW"
         cert.get_subject().L = "Aachen"
-        cert.get_subject().O = "SiriServer by Eichhoernchen"
+        cert.get_subject().O = "Siri Server"
         cert.get_subject().OU = "SiriServer Certificate Authority"
         
         hostname = gethostname()
@@ -202,7 +202,7 @@ def main():
     
     parser = OptionParser()
     parser.add_option('-l', '--loglevel', default='info', dest='logLevel', help='This sets the logging level you have these options: debug, info, warning, error, critical \t\tThe standard value is info')
-    parser.add_option('-p', '--port', default=4443, type='int', dest='port', help='This options lets you use a custom port instead of 443 (use a port > 1024 to run as non root user)')
+    parser.add_option('-p', '--port', default=443, type='int', dest='port', help='This options lets you use a custom port instead of 443 (use a port > 1024 to run as non root user)')
     parser.add_option('--logfile', default=None, dest='logfile', help='Log to a file instead of stdout.')
     parser.add_option('-m', '--maxConnections', default=None, type='int', dest='maxConnections', help='You can limit the number of maximum simultaneous connections with that switch')
     (options, _) = parser.parse_args()

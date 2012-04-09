@@ -8,7 +8,7 @@ class AsyncOpenHttp(object):
         super(AsyncOpenHttp, self).__init__()
         self.callback = callback
     
-    def make_google_request(self, flac, requestId, dictation, language="de-DE", allowCurses=True):
+    def make_google_request(self, flac, requestId, dictation, language="en-US", allowCurses=True):
         d = threads.deferToThread(self.run, flac, requestId, dictation, language, allowCurses)
         d.addCallback(self.callback, requestId, dictation)
         d.addErrback(self.onError)
@@ -35,5 +35,5 @@ class AsyncOpenHttp(object):
     
     def run(self, flac, requestId, dictation, language, allowCurses):
         url = "https://www.google.com/speech-api/v1/recognize?xjerr=1&client=chromium&pfilter={0}&lang={1}&maxresults=6".format(0 if allowCurses else 2, language)
-        req = urllib2.Request(url, data = flac, headers = {'Content-Type': 'audio/x-flac; rate=16000', 'User-Agent': 'Siri-Server'})
+        req = urllib2.Request(url, data = flac, headers = {'Content-Type': 'audio/x-flac; rate=16000', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.151 Safari/535.19'})
         return self.getWebsite(req, timeout=10)

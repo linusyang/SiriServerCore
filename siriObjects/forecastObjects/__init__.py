@@ -3,7 +3,7 @@ from siriObjects.baseObjects import ClientBoundCommand, AceObject
 import logging
 class SiriForecastSnippet(AceObject):
     def __init__(self, aceWeathers=[]):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastSnippet, self).__init__("ForecastSnippet", "com.apple.ace.weather")
         self.aceWeathers = aceWeathers
       
@@ -13,7 +13,7 @@ class SiriForecastSnippet(AceObject):
         
 class SiriForecastAceWeathers(AceObject):
     def __init__(self, currentConditions=None, dailyForecasts=None, hourlyForecasts=None, view="HOURLY", weatherLocation=None, extendedForecastUrl="http://m.yahoo.com/search?p=Frankfurt,+HE&.tsrc=appleww", units=None):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathers, self).__init__("Object", "com.apple.ace.weather")
         self.currentConditions = currentConditions
         self.hourlyForecasts = hourlyForecasts
@@ -35,7 +35,7 @@ class SiriForecastAceWeathers(AceObject):
         
 class SiriForecastAceWeathersHourlyForecast(AceObject):
     def __init__(self, chanceOfPrecipitation=0, isUserRequested=True,condition=None, temperature=0, timeIndex=20):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersHourlyForecast, self).__init__("HourlyForecast", "com.apple.ace.weather")
         self.chanceOfPrecipitation = chanceOfPrecipitation
         self.isUserRequested = isUserRequested
@@ -54,7 +54,7 @@ class SiriForecastAceWeathersHourlyForecast(AceObject):
 class SiriForecastAceWeathersDailyForecast(AceObject):
     
     def __init__(self, chanceOfPerception=0, isUserRequested=True,condition=None, lowTemperature=0, highTemperature=0, timeIndex=1):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersDailyForecast, self).__init__("DailyForecast", "com.apple.ace.weather")
         self.chanceOfPerception = chanceOfPerception
         self.isUserRequested = isUserRequested
@@ -74,7 +74,7 @@ class SiriForecastAceWeathersDailyForecast(AceObject):
 
 class SiriForecastAceWeathersWeatherLocation(AceObject):
     def __init__(self, locationId="20066682", countryCode="Germany", city="Frankfurt", stateCode = "Hesse"):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersWeatherLocation, self).__init__("Location", "com.apple.ace.weather")
         self.locationId = locationId
         self.countryCode = countryCode
@@ -91,7 +91,7 @@ class SiriForecastAceWeathersWeatherLocation(AceObject):
         
 class SiriForecastAceWeathersUnits(AceObject):
     def __init__(self, speedUnits="KPH", distanceUnits="Kilometers", temperatureUnits="Celsius", pressureUnits = "MB"):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersUnits, self).__init__("Units", "com.apple.ace.weather")
         self.speedUnits = speedUnits
         self.distanceUnits = distanceUnits
@@ -107,7 +107,7 @@ class SiriForecastAceWeathersUnits(AceObject):
         
 class SiriForecastAceWeathersCurrentConditions(AceObject):
     def __init__(self, feelsLike="0", dayOfWeek=6, timeOfObservation="18:00",barometricPressure=None, visibility="0", percentOfMoonFaceVisible=90, temperature = "0", sunrise="7:30", sunset="19:00", moonPhase="WAXING_GIBBOUS",percentHumidity="80", timeZone="Central European Time", dewPoint="0", condition=None, windChill="0", windSpeed=None,):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersCurrentConditions, self).__init__("CurrentConditions", "com.apple.ace.weather")
         self.feelsLike = feelsLike
         self.dayOfWeek = dayOfWeek
@@ -148,7 +148,7 @@ class SiriForecastAceWeathersCurrentConditions(AceObject):
         
 class SiriForecastAceWeathersConditions(AceObject):
     def __init__(self, conditionCode="Sunny", conditionCodeIndex=32):
-        logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
+        #logging.getLogger().warning("THIS OBJECT IS DEPRECATED AND WILL BE REMOVED IN FUTURE RELEASES, PLEASE USE THE WEATHER OBJECTS")
         super(SiriForecastAceWeathersConditions, self).__init__("Condition", "com.apple.ace.weather")
         self.conditionCode = conditionCode
         self.conditionCodeIndex = conditionCodeIndex

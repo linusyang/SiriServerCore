@@ -28,8 +28,8 @@ import uuid
        
 
 class SiriProtocolHandler(Siri):
-    __not_recognized = {"de-DE": u"Entschuldigung, ich verstehe \"{0}\" nicht.", "en-US": u"Sorry I don't understand {0}", "fr-FR": u"Désolé je ne comprends pas ce que \"{0}\" veut dire."}
-    __websearch = {"de-DE": u"Websuche", "en-US": u"Websearch", "fr-FR": u"Rechercher sur le Web"}
+    __not_recognized =  {"de-DE": u"Entschuldigung, ich verstehe \"{0}\" nicht.", "en-US": u"Sorry, I don't understand ‘{0}’.", "fr-FR": u"Désolé je ne comprends pas ce que \"{0}\" veut dire.", "zh-CN": u"我听不懂“{0}”。"}
+    __websearch =  {"de-DE": u"Websuche", "en-US": u"Search the web", "fr-FR": u"Rechercher sur le Web", "zh-CN": u"搜索网页"}
     __scheduling_interval_timeout__ = 20
     __timeout_delay = 10
     
@@ -365,6 +365,12 @@ class SiriProtocolHandler(Siri):
                     self.logger.warning("Assistant not found in database!!")                        
                 else:
                     self.assistant = result[0]
+                    #chinese test here
+                    if self.assistant.language == 'en-AU':
+                        self.assistant.language = 'zh-CN'           
+                    #fix if there is no language or a bug in siri, spire
+                    if self.assistant.language == '':
+                        self.assistant.language = 'en-US'
                     if self.assistant.language == '' or self.assistant.language == None:
                         self.logger.error ("No language is set for this assistant")                        
                         c.execute("delete from assistants where assistantId = ?", (plist['properties']['assistantId'],))
