@@ -177,7 +177,7 @@ class weatherPlugin(Plugin):
             # lets wait max 3 seconds
         jsonString = None
         try:
-            jsonString = urllib2.urlopen(url, timeout=3).read()
+            jsonString = urllib2.urlopen(url, timeout=10).read()
         except:
             pass
         if jsonString != None:
@@ -194,7 +194,7 @@ class weatherPlugin(Plugin):
                     # lets wait max 3 seconds
                     jsonString = None
                     try:
-                        jsonString = urllib2.urlopen(url, timeout=3).read()
+                        jsonString = urllib2.urlopen(url, timeout=10).read()
                     except:
                         pass
                     if jsonString != None:

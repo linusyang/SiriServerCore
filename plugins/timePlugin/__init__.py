@@ -74,7 +74,7 @@ class timePlugin(Plugin):
             # lets wait max 3 seconds
             jsonString = None
             try:
-                jsonString = urllib2.urlopen(url, timeout=3).read()
+                jsonString = urllib2.urlopen(url, timeout=10).read()
             except:
                 pass
             if jsonString != None:
@@ -90,7 +90,7 @@ class timePlugin(Plugin):
                             # lets wait max 3 seconds
                         jsonString = None
                         try:
-                            jsonString = urllib2.urlopen(url, timeout=3).read()
+                            jsonString = urllib2.urlopen(url, timeout=10).read()
                         except:
                             pass
                         if jsonString != None:
@@ -104,7 +104,7 @@ class timePlugin(Plugin):
                     url = u"http://api.geonames.org/timezoneJSON?lat={0}&lng={1}&username={2}".format(location['lat'], location['lng'], geonames_user)
                     jsonString = None
                     try:
-                        jsonString = urllib2.urlopen(url, timeout=3).read()
+                        jsonString = urllib2.urlopen(url, timeout=10).read()
                     except:
                         pass
                     if jsonString != None:

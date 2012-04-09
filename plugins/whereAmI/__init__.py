@@ -27,7 +27,7 @@ class whereAmI(Plugin):
         location = self.getCurrentLocation(force_reload=True,accuracy=GetRequestOrigin.desiredAccuracyBest)
         url = "http://maps.googleapis.com/maps/api/geocode/json?latlng={0},{1}&sensor=false&language={2}".format(str(location.latitude),str(location.longitude), language)
         try:
-            jsonString = urllib2.urlopen(url, timeout=3).read()
+            jsonString = urllib2.urlopen(url, timeout=10).read()
         except:
             pass
         if jsonString != None:
@@ -98,7 +98,6 @@ class whereAmI(Plugin):
             the_location = re.match("(?u).* is ([\w ]+)$", speech, re.IGNORECASE)
             the_location = the_location.group(1).strip()
         
-        print the_location
         if the_location != None:
             the_location = the_location[0].upper()+the_location[1:]
         else:
@@ -115,7 +114,7 @@ class whereAmI(Plugin):
         url = u"http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=false&language={1}".format(urllib.quote_plus(the_location.encode("utf-8")), language)
         jsonString=None
         try:
-            jsonString = urllib2.urlopen(url, timeout=3).read()
+            jsonString = urllib2.urlopen(url, timeout=10).read()
         except:
             pass
         if jsonString != None:

@@ -31,7 +31,7 @@ class wikiPedia(Plugin):
         #searchString=searchString.replace(' ','_')
         url = "http://{0}.wikipedia.org/w/api.php?format=json&action=query&titles={1}&prop=revisions&rvprop=content".format(wikiLanguage,urllib.quote_plus(str(searchString.encode("utf-8"))))
         try:
-            jsonString = urllib2.urlopen(url, timeout=3).read()
+            jsonString = urllib2.urlopen(url, timeout=10).read()
         except:
             jsonString = None
         if jsonString != None:
