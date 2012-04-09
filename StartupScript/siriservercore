@@ -2,25 +2,25 @@
 
 
 ### BEGIN INIT INFO
-# Provides:          SiriServer application instance
+# Provides:          SiriServerCore application instance
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts instance of SiriServer
-# Description:       starts instance of SiriServer using start-stop-daemon
+# Short-Description: starts instance of SiriServerCore
+# Description:       starts instance of SiriServerCore using start-stop-daemon
 ### END INIT INFO
 
 # main variables
 DAEMON=/usr/bin/python
 SETTINGS_LOADED=FALSE
 
-DESC=SiriServer
+DESC=SiriServerCore
 ####### EDIT THESE LINES #########
 # you may change RUN_AS parameter to your username if you select ports over 1024 #
 PORT=443
 RUN_AS=root
-APP_PATH=/root/SiriServer/
+APP_PATH=/root/SiriServerCore/
 ####### END | NO MORE EDITING #####
 
 . /lib/lsb/init-functions
