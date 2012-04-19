@@ -24,6 +24,7 @@ class examplePlugin(Plugin):
     @register("de-DE", ".*standort.*test.*")
     @register("en-US", ".*location.*test.*")
     @register("zh-CN", u".*位置.*测试.*")
+    @register("nl-NL", ".*locatie.*test.*")
     def locationTest(self, speech, language):
         location = self.getCurrentLocation(force_reload=True)
         if language == 'zh-CN':
