@@ -21,7 +21,7 @@ googleplaces_api_key = APIKeyForAPI("googleplace")
  
 class googlePlacesSearch(Plugin):
      @register("en-US", "(find|show|where).* (nearest|nearby|closest) (.*)")
-     @register("zh-CN", u".*(找|告诉我|哪里|离我|显示).*(近的|近|旁边的|旁边|周围的|周围)(.*)")
+     @register("zh-CN", u".*(赵|找|告诉我|哪里|离我|显示).*(近的|近|旁边的|旁边|周围的|周围)(.*)")
      @register("en-GB", "(find|show|where).* (nearest|nearby|closest) (.*)")
      def googleplaces_search(self, speech, language, regex):
           if language == "zh-CN":
@@ -32,6 +32,8 @@ class googlePlacesSearch(Plugin):
           latitude= mapGetLocation.latitude
           longitude= mapGetLocation.longitude
           Title = regex.group(regex.lastindex).strip()
+          if Title == None:
+              Title = '';
           Query = urllib.quote_plus(str(Title.encode("utf-8")))
           random_results = random.randint(2,15)
           googleurl = "https://maps.googleapis.com/maps/api/place/search/json?location={0},{1}&radius=5000&name={2}&sensor=true&key={3}".format(latitude,longitude,str(Query),str(googleplaces_api_key))
