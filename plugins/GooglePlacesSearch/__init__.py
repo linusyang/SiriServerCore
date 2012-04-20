@@ -32,8 +32,6 @@ class googlePlacesSearch(Plugin):
           latitude= mapGetLocation.latitude
           longitude= mapGetLocation.longitude
           Title = regex.group(regex.lastindex).strip()
-          if Title == None:
-              Title = '';
           Query = urllib.quote_plus(str(Title.encode("utf-8")))
           random_results = random.randint(2,15)
           googleurl = "https://maps.googleapis.com/maps/api/place/search/json?location={0},{1}&radius=5000&name={2}&sensor=true&key={3}".format(latitude,longitude,str(Query),str(googleplaces_api_key))
@@ -53,9 +51,12 @@ class googlePlacesSearch(Plugin):
                          rating = Rating(value=avg_rating, providerId='Google Places', count=0)
                          details = Business(totalNumberOfReviews=0,name=result['name'],rating=rating)
                          if (len(googleplaces_results) < random_results):
-                              mapitem = MapItem(label=result['name'], street=result['vicinity'], latitude=result['geometry']['location']['lat'], longitude=result['geometry']['location']['lng'])
-                              mapitem.detail = details
-                              googleplaces_results.append(mapitem)
+                              try:
+                                  mapitem = MapItem(label=result['name'], street=result['vicinity'], latitude=result['geometry']['location']['lat'], longitude=result['geometry']['location']['lng'])
+                                  mapitem.detail = details
+                                  googleplaces_results.append(mapitem)
+                              except:
+                                  pass
                          else:
                               break
                     mapsnippet = MapItemSnippet(items=googleplaces_results)
