@@ -6,12 +6,14 @@
 #For: SiriServer
 #Commands: The same as in original Wolfram Alpha in Siri
 #If you find bug: email me - admin@game-host.eu
+#Improved by Linus Yang <laokongzi@gmail.com>
 
 import re, urlparse
 import urllib2, urllib
 from urllib2 import urlopen
 from xml.dom import minidom
 import random
+import json, codecs, xml.etree.ElementTree as etree
 
 from plugin import *
 
@@ -19,17 +21,61 @@ from siriObjects.baseObjects import AceObject, ClientBoundCommand
 from siriObjects.uiObjects import AddViews, AssistantUtteranceView
 from siriObjects.answerObjects import AnswerSnippet, AnswerObject, AnswerObjectLine
 
-
 APPID = APIKeyForAPI("wolframalpha")
+clientid = APIKeyForAPI("bing_clientid")
+clientsec = APIKeyForAPI("bing_clientsecret")
 
+def _unicode_urlencode(params):
+    if isinstance(params, dict):
+        params = params.items()
+    return urllib.urlencode([(k, isinstance(v, unicode) and v.encode('utf-8') or v) for k, v in params])    
 
-
+def translate(text, source, target, html=False):
+    token_data = {
+        'grant_type': 'client_credentials',
+        'client_id': clientid,
+        'client_secret': clientsec,
+        'scope': 'http://api.microsofttranslator.com'
+    }
+    get_token = urllib.urlopen(
+        url = 'https://datamarket.accesscontrol.windows.net/v2/OAuth2-13',
+        data = urllib.urlencode(token_data)
+        ).read()
+    token = None
+    if get_token is not None:
+        try:
+            token = json.loads(get_token)['access_token']
+        except:
+            pass
+    if token is None:
+        return None
+    query_args = {
+        'appId': 'Bearer ' + token,
+        'text': text,
+        'to': target,
+        'contentType': 'text/plain' if not html else 'text/html',
+        'category': 'general'
+    }
+    if source is not None:
+        query_args['from'] = source
+    result = urllib.urlopen('http://api.microsofttranslator.com/V2/Http.svc/Translate?' + _unicode_urlencode(query_args)).read()
+    if result.startswith(codecs.BOM_UTF8):
+        result = result.lstrip(codecs.BOM_UTF8).decode('utf-8')
+    elif result.startswith(codecs.BOM_UTF16_LE):
+        result = result.lstrip(codecs.BOM_UTF16_LE).decode('utf-16-le')
+    elif result.startswith(codecs.BOM_UTF16_BE):
+        result = result.lstrip(codecs.BOM_UTF16_BE).decode('utf-16-be')
+    answer = etree.fromstring(result)
+    if answer is not None:
+        return answer.text
+    return None
 
 class wolfram(Plugin):
     
     @register("de-DE", "(Was ist [a-zA-Z0-9]+)|(Wer ist [a-zA-Z0-9]+)|(Wie viel [a-zA-Z0-9]+)|(Was war [a-zA-Z0-9]+)|(Wer ist [a-zA-Z0-9]+)|(Wie lang [a-zA-Z0-9]+)|(Was ist [a-zA-Z0-9]+)|(Wie weit [a-zA-Z0-9]+)|(Wann ist [a-zA-Z0-9]+)|(Zeig mir [a-zA-Z0-9]+)|(Wie hoch [a-zA-Z0-9]+)|(Wie tief [a-zA-Z0-9]+)")     
     @register("en-US", "(What is [a-zA-Z0-9]+)|(Who is [a-zA-Z0-9]+)|(How many [a-zA-Z0-9]+)|(What was [a-zA-Z0-9]+)|(Who's [a-zA-Z0-9]+)|(How long [a-zA-Z0-9]+)|(What's [a-zA-Z0-9]+)|(How far [a-zA-Z0-9]+)|(When is [a-zA-Z0-9]+)|(Show me [a-zA-Z0-9]+)|(How high [a-zA-Z0-9]+)|(How deep [a-zA-Z0-9]+)")
     @register("fr-FR", u"(Wolfram |Qu'est ce que |Est.ce que |Quesque |Quesqui est|Esque |Qui est |Combien de |Qu'étais |Combien de temps |Combien font |A quelle distance |Quand est |Montre moi |(A|à) (quelle|quel) hauteur |(A|à) (quelle|quel) profondeur |Quelle est |Quel est |Que vaux |Que vaut )(.*)")
+    @register("zh-CN", u".*(回答|告诉我)([\w ]+)")
     def wolfram(self, speech, language, regex):
         if language == 'fr-FR':
             wolframQuestion = regex.group(regex.lastindex).strip()
@@ -41,6 +87,10 @@ class wolfram(Plugin):
         elif language == "de-DE":
             wolframQuestion = speech.replace('wer ist ','').replace('was ist ', '').replace('Wer ist ','').replace('Was ist ', '').replace('Wie viel ','How much ').replace('Wie lang ','How long ').replace('Wie weit ','How far ').replace('Wann ist ','When is ').replace('Zeig mir ','Show me ').replace('Wie hoch ','How high ').replace('Wie tief ','How deep ').replace('ist','is').replace('der','the').replace('die','the').replace('das','the').replace('wie viel ','how much ').replace('wie lang ','how long ').replace('wie weit ','how far ').replace('wann ist ','when is ').replace('zeig mir ','show me ').replace('wie hoch ','how high ').replace('wie tief ','how deep ').replace('ist','is').replace('der','the').replace('die','the').replace('das','the').replace(u'ä', 'a').replace(u'ö', 'o').replace(u'ü', 'u').replace(u'ß', 's')
             wolframTranslation = 'true'
+        elif language == 'zh-CN':
+            question = regex.group(regex.lastindex)
+            wolframQuestion = translate(question, 'zh-CHS', 'en')
+            wolframTranslation = 'false'
         else:
             wolframQuestion = speech.replace('who is ','').replace('what is ','').replace('what was ','').replace('Who is ','').replace('What is ','').replace('What was ','')
             wolframTranslation = 'false'
@@ -193,6 +243,8 @@ class wolfram(Plugin):
             elif language == 'fr-FR':
                 rep = [u"Cela pourrait répondre à votre question : ", u"Voici la réponse à votre question : ", u"Cela répond peut-être à votre question : "]
                 self.say(random.choice(rep))
+            elif language == 'zh-CN':
+                self.say(u'这也许能回答您的问题：')
             else:
                 self.say("This might answer your question:")
         if wolfram_pod0 == 12:
@@ -201,6 +253,8 @@ class wolfram(Plugin):
             elif language == 'fr-FR':
                 rep = [u"Je n'ai trouvé aucune réponse à votre question !", u"Je ne trouve pas la réponse à votre question !", u"Je ne trouve aucune réponse à votre question !", u"Désolé, je ne connais pas de réponse à votre question !"]
                 self.say(random.choice(rep));
+            elif language == 'zh-CN':
+                self.say(u'抱歉，我答不上您的问题。')
             else:
                 self.say("Sorry, nothing was found for your query.")
             self.complete_request()
