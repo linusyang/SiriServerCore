@@ -18,7 +18,10 @@ class talkToMe(Plugin):
         servertype = ' '.join(os.uname())
         freemem = None
         if os.name == "posix":
-            uptime = os.popen("uptime").read()
+            try:
+                uptime = os.popen("uptime").read()
+            except:
+                pass
         if sys.platform.startswith('linux'):
             freemem = os.popen("grep MemFree /proc/meminfo").read()
         if (uptime == None) and (freemem == None) and (servertype == None):

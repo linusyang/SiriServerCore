@@ -1,11 +1,15 @@
 from ctypes import *
 import sys
+import os
 import platform
 import ctypes.util
 
 system = platform.system()
 
 libspeex_name = ctypes.util.find_library('speex')
+if libspeex_name == None:
+    if os.path.isfile('/bin/cygspeex-1.dll'):
+        libspeex_name = '/bin/cygspeex-1.dll'
 if libspeex_name == None:
     print "Could not find libspeex"
     exit()

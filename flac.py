@@ -7,6 +7,9 @@ import tempfile
 
 libflac_name = ctypes.util.find_library('FLAC')
 if libflac_name == None:
+    if os.path.isfile('/bin/cygFLAC-8.dll'):
+        libflac_name = '/bin/cygFLAC-8.dll'
+if libflac_name == None:
     print "Could not find libFLAC"
     exit()
 libflac = CDLL(libflac_name)
