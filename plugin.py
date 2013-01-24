@@ -29,7 +29,6 @@ __error_location_saysettings__ = {"de-DE": u"In den Ortungsdienst Einstellungen,
 __error_location_settings__ = {"de-DE": u"Ortungsdienst Einstellungen", "en-US": u"Location Services Settings", "en-GB": u"Location Services Settings", "en-AU": u"Location Services Settings", "fr-FR": u"Services de localisation", "zh-CN": u"定位服务设置"}
 
 
-
 def register(lang, regex):
     def addInfosTo(func):
         if not __criteria_key__ in func.__dict__:
@@ -106,6 +105,7 @@ class Plugin(threading.Thread):
         self.assistant = assistant
         self.location = location
         self.__shouldCancel = False
+        self.__priority = False
         
     def _abortPluginRun(self):
         self.__shouldCancel = True

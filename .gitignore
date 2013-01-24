@@ -9,3 +9,5 @@ ca.pem
 *.pem
 server.crt
 server.key
+
+plugins/

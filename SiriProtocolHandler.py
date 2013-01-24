@@ -13,9 +13,12 @@ from siriObjects.systemObjects import StartRequest, SendCommands, CancelRequest,
     CancelSucceeded, GetSessionCertificate, GetSessionCertificateResponse, \
     CreateSessionInfoRequest, CommandFailed, RollbackRequest, CreateAssistant, \
     AssistantCreated, SetAssistantData, LoadAssistant, AssistantNotFound, \
-    AssistantLoaded, DestroyAssistant, AssistantDestroyed
+    AssistantLoaded, DestroyAssistant, AssistantDestroyed, CreateSessionInfoResponse
 from siriObjects.uiObjects import UIAddViews, UIAssistantUtteranceView, UIButton
+from siriObjects.syncObjects import SyncChunk, SyncChunkAccepted, SyncAnchor,\
+    SyncChunkDenied
 import PluginManager
+import biplist
 import flac
 import json
 import pprint
@@ -46,6 +49,7 @@ class SiriProtocolHandler(Siri):
         self.current_google_request = None
         self.current_location = None
         self.lastPingTime = time.time()
+        self.syncAnchors = dict()
         self.timeoutschedule = twisted.internet.reactor.callLater(SiriProtocolHandler.__scheduling_interval_timeout__, self.checkTimeout)
         
     def seconds_since_last_ping(self):
@@ -256,7 +260,7 @@ class SiriProtocolHandler(Siri):
                     decoder.destroy()
                 if encoder:
                     encoder.finish()
-                    encoder.destory()
+                    encoder.destroy()
                 del self.speech[cancelRequest.refId]
             if self.current_google_request != None:
                 self.current_google_request.cancel()
@@ -275,6 +279,25 @@ class SiriProtocolHandler(Siri):
             
         elif ObjectIsCommand(plist, RollbackRequest):
             pass
+        
+        elif ObjectIsCommand(plist, SyncChunk):
+            chunk = SyncChunk(plist)
+            previous = self.syncAnchors[chunk.key] if chunk.key in self.syncAnchors else None
+            if previous != None:
+                if previous.generation != chunk.preGen:
+                    chunkDenied = SyncChunkDenied(chunk.aceId)
+                    self.send_object(chunkDenied)
+                    return 
+            current = SyncAnchor()
+            current.generation = chunk.postGen
+            current.value = chunk.postGen
+            current.validity = chunk.validity
+            current.key = chunk.key
+            self.syncAnchors[current.key] = current
+            chunkAccepted = SyncChunkAccepted(chunk.aceId)
+            chunkAccepted.current = current
+            self.send_object(chunkAccepted)
+            pass
 
         elif ObjectIsCommand(plist, GetSessionCertificate):
             getSessionCertificate = GetSessionCertificate(plist)
@@ -286,18 +309,28 @@ class SiriProtocolHandler(Siri):
         elif ObjectIsCommand(plist, CreateSessionInfoRequest):
             # how does a positive answer look like?
             createSessionInfoRequest = CreateSessionInfoRequest(plist)
+            
+            #success = CreateSessionInfoResponse(createSessionInfoRequest.aceId)
+            #success.sessionInfo = biplist.Data("\x01\x02BLABLABLBALBALBALBALBALBALBALBA")
+            #success.validityDuration = 9600
+            
+            #self.send_object(success)
             fail = CommandFailed(createSessionInfoRequest.aceId)
             fail.reason = "Not authenticated"
             fail.errorCode = 0
             self.send_object(fail)
 
-            #self.send_plist({"class":"SessionValidationFailed", "properties":{"errorCode":"UnsupportedHardwareVersion"}, "aceId": str(uuid.uuid4()), "refId":plist['aceId'], "group":"com.apple.ace.system"})
+            ##self.send_plist({"class":"SessionValidationFailed", "properties":{"errorCode":"UnsupportedHardwareVersion"}, "aceId": str(uuid.uuid4()), "refId":plist['aceId'], "group":"com.apple.ace.system"})
             
         elif ObjectIsCommand(plist, CreateAssistant):
             createAssistant = CreateAssistant(plist)
             #create a new assistant
             helper = Assistant()     
-            helper.assistantId = str.upper(str(uuid.uuid4())) 
+            helper.assistantId = str.upper(str(uuid.uuid4()))
+            helper.language = createAssistant.language
+            helper.activationToken = createAssistant.activationToken
+            helper.connectionType = createAssistant.connectionType
+            helper.validationData = createAssistant.validationData
             c = self.dbConnection.cursor()
             noError = True
             try:
@@ -371,6 +404,10 @@ class SiriProtocolHandler(Siri):
                     self.logger.warning("Assistant not found in database!!")                        
                 else:
                     self.assistant = result[0]
+                    #update assistant from LoadAssistant
+                    self.assistant.language = loadAssistant.language
+                    self.assistant.connectionType = loadAssistant.connectionType
+                    
                     if self.assistant.language == '' or self.assistant.language == None:
                         self.logger.error ("No language is set for this assistant")                        
                         c.execute("delete from assistants where assistantId = ?", (plist['properties']['assistantId'],))
@@ -382,7 +419,7 @@ class SiriProtocolHandler(Siri):
                     else:                        
                         loaded = AssistantLoaded(loadAssistant.aceId)
                         loaded.version = "20111216-32234-branches/telluride?cnxn=293552c2-8e11-4920-9131-5f5651ce244e"
-                        loaded.requestSync = False
+                        loaded.requestSync = 0
                         try:
                             loaded.dataAnchor = self.assistant.anchor
                         except:

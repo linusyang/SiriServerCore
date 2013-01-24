@@ -13,6 +13,7 @@ import struct
 import threading
 import zlib
 import pprint
+import re
 
 class Ping(object):
     def __init__(self, num):
@@ -23,11 +24,14 @@ class ServerObject(object):
         self.plist = plist
 
 class Siri(LineReceiver):
+    #Assistant(MacBook Pro/MacBookPro9,2; Mac OS X/10.8.2/12C60) Ace/1.2
+    userAgentParser = re.compile("Assistant\((?P<deviceType>.*)/(?P<deviceVersion>.+); (?P<clientOSType>.*)/(?P<clientOSVersion>.*)/(?P<clientOSbuildNumber>.*)\) Ace/(?P<protocolVersion>.*)")
 
     def __init__(self, server, peer):
         self.server = server
         self.peer = peer
         self.header = ""
+        self.headerPerField = dict()
         self.rawData = ""
         self.output_buffer = ""
         self.unzipped_output_buffer = ""
@@ -37,6 +41,12 @@ class Siri(LineReceiver):
         self.compressor = zlib.compressobj()
         self.logger = logging.getLogger()
         self.sendLock = threading.Lock()
+        self.deviceType = "Unknown"
+        self.deviceVersion = "Unknown"
+        self.protocolVersion = "Unknown"
+        self.clientOSType = "Unknown"
+        self.clientOSVersion = "Unknown"
+        self.clientOSbuildNumber = "Unknown"
 
     def connectionMade(self):
         self.logger.info("New connection from {0} on port {1}".format(self.peer.host, self.peer.port))
@@ -69,6 +79,10 @@ class Siri(LineReceiver):
             self.logger.debug("---------------HEADER END----------------")
             request = HTTPRequest(self.header)
             if request.error_code == None:
+                if request.command == "HEAD" and request.path == "/salt":
+                    return (406, "Unacceptable")
+                if request.command == "HEAD" and request.path == "/ace":
+                    return (406, "Unacceptable")
                 if request.command != "ACE":
                     return (405, "Method Not Allowed")
                 if request.path != "/ace":
@@ -88,18 +102,31 @@ class Siri(LineReceiver):
                 code = 200
                 message = "OK"
                 success = True
+                self.output_buffer = ("HTTP/1.1 {0} {1}\r\nServer: Apache-Coyote/1.1\r\nDate: " + formatdate(timeval=None, localtime=False, usegmt=True) + "\r\nConnection: close\r\n\r\n").format(code, message)
             else:
                 # we need to receive more
                 return
         else:
             code, message = headerCheck
+            self.output_buffer = "HTTP/1.0 {0} {1}\r\nContent-Length: {2}\r\n\r\n{0} {1}".format(code, message, len(str(code))+len(message)+1)
             
-        self.output_buffer = ("HTTP/1.1 {0} {1}\r\nServer: Apache-Coyote/1.1\r\nDate: " + formatdate(timeval=None, localtime=False, usegmt=True) + "\r\nConnection: close\r\n\r\n").format(code, message)
         self.flush_output_buffer()
         if not success:
             self.transport.loseConnection()
         else:
             self.consumed_ace = False
+            headerlines = self.header.strip().splitlines()[1:]
+            self.headerPerField = dict([headerlines[i].split(": ") for i in range(0, len(headerlines))])
+            if "User-Agent" in self.headerPerField.keys():
+                match = Siri.userAgentParser.match(self.headerPerField["User-Agent"])
+                if match != None:
+                    self.deviceType = match.group('deviceType')
+                    self.deviceVersion = match.group('deviceVersion')
+                    self.clientOSType = match.group('clientOSType')
+                    self.clientOSVersion = match.group('clientOSVersion')
+                    self.clientOSbuildNumber = match.group('clientOSbuildNumber')
+                    self.protocolVersion = match.group('protocolVersion')
+            self.logger.info("New {0} ({1}) on {2} version {3} build {4} connected using protocol version {5}".format(self.deviceType, self.deviceVersion, self.clientOSType, self.clientOSVersion, self.clientOSbuildNumber, self.protocolVersion))
             self.setRawMode()
         
     def rawDataReceived(self, data):
