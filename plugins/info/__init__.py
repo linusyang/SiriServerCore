@@ -28,7 +28,7 @@ class talkToMe(Plugin):
             if language == 'zh-CN':
                 self.say(u'您的服务器系统不支持状态查询。')
             else:
-                self.say(u"Sorry, I can't get status from you server")
+                self.say(u"Sorry, I can't get status from you server.")
         elif language == 'de-DE':
             self.say('Hier ist der Status:')
             if servertype != None:
@@ -54,12 +54,33 @@ class talkToMe(Plugin):
             if freemem != None:
                 self.say(freemem, 'And size of free memory.')
         self.complete_request()     
-    
+
+    @register("en-US", ".*(update).*(blog).*")
+    @register("zh-CN", u".*(更新|升级).*(博客|日志).*")
+    def ttm_update_blog(self, speech, language):
+        status = None
+        try:
+            status = os.popen('su www-data -c "cd /var/www/yangblog && git pull"').read()
+        except:
+            pass
+        if status == None:
+            if language == 'zh-CN':
+                self.say(u'我在更新博客时遇到了麻烦。')
+            else:
+                self.say(u"Sorry, I can't update your blog.")
+        elif language == 'zh-CN':
+            self.say(u'博客已更新：')
+            if status != None:
+                self.say(servertype, u'这是更新内容。')
+        else:
+            self.say('Your blog is updated:')
+            if status != None:
+                self.say(status, 'This is updated content.')
+        self.complete_request()    
     
     @register("de-DE", "(Welcher Tag.*)|(Welches Datum.*)")
     @register("en-US", "(What Day.*)|(What.*Date.*)")
-    @register("zh-CN", u"(.*几号.*)|(.*日期.*)")
-    
+    @register("zh-CN", u"(.*几号.*)|(.*日期.*)|(.*星期几.*)|(.*礼拜几.*)")
     def ttm_say_date(self, speech, language):
         now = date.today()
         if language == 'de-DE':
@@ -75,7 +96,24 @@ class talkToMe(Plugin):
             except:
                 pass
             result = u"今天是"
-            result += now.strftime("%Y年%m月%d日，第%W周，%A。").decode("utf-8")
+            result += now.strftime("%Y年%m月%d日").decode("utf-8")
+            weekday = now.weekday()
+            wdstring = u"一"
+            if weekday == 0:
+                wdstring = u"一"
+            elif weekday == 1:
+                wdstring = u"二"
+            elif weekday == 2:
+                wdstring = u"三"
+            elif weekday == 3:
+                wdstring = u"四"
+            elif weekday == 4:
+                wdstring = u"五"
+            elif weekday == 5:
+                wdstring = u"六"
+            elif weekday == 6:
+                wdstring = u"日"
+            result += u"，星期" + wdstring + u"。"
             self.say(result)
         else:
             try:

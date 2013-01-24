@@ -20,7 +20,7 @@ DESC=SiriServerCore
 # you may change RUN_AS parameter to your username if you select ports over 1024 #
 PORT=443
 RUN_AS=root
-APP_PATH=/root/SiriServerCore/
+APP_PATH=/var/www/yangblog/SiriServerCore/
 ####### END | NO MORE EDITING #####
 
 . /lib/lsb/init-functions

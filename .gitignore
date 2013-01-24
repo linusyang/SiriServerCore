@@ -1,4 +1,5 @@
 *.pyc
+*.swp
 .DS_Store
 .project
 .pydevproject
@@ -9,5 +10,3 @@ ca.pem
 *.pem
 server.crt
 server.key
-
-plugins/
