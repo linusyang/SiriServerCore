@@ -104,10 +104,10 @@ def create_self_signed_cert(customHostname):
 
         # create a self-signed cert
         CAcert = crypto.X509()
-        CAcert.get_subject().C = "DE"
-        CAcert.get_subject().ST = "NRW"
-        CAcert.get_subject().L = "Aachen"
-        CAcert.get_subject().O = "Siri Server"
+        CAcert.get_subject().C = "CN"
+        CAcert.get_subject().ST = "JS"
+        CAcert.get_subject().L = "Nanjing"
+        CAcert.get_subject().O = "YangServer"
         CAcert.get_subject().OU = "SiriServer Certificate Authority"
         CAcert.get_subject().CN = "SiriServer CA"
         CAcert.set_serial_number(1000)
@@ -142,10 +142,10 @@ def create_self_signed_cert(customHostname):
 
         # create a self-signed cert
         cert = crypto.X509()
-        cert.get_subject().C = "DE"
-        cert.get_subject().ST = "NRW"
-        cert.get_subject().L = "Aachen"
-        cert.get_subject().O = "Siri Server"
+        cert.get_subject().C = "CN"
+        cert.get_subject().ST = "JS"
+        cert.get_subject().L = "Nanjing"
+        cert.get_subject().O = "YangServer"
         cert.get_subject().OU = "SiriServer Certificate Authority"
         
         hostname = gethostname()
