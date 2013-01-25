@@ -70,12 +70,12 @@ class googlePlacesSearch(Plugin):
                     self.sendRequestWithoutAnswer(view)
                else:
                     if language == "zh-CN":
-                        self.say(u"抱歉，我找不到您附近有关"+str(Title.encode("utf-8"))+"的地点！")
+                        self.say(u"抱歉，我找不到您附近有关"+Title+u"的地点。")
                     else:
                         self.say("I'm sorry but I did not find any results for "+str(Title)+" near you!")
           else:
               if language == "zh-CN":
-                  self.say(u"抱歉，我找不到您附近有关"+str(Title.encode("utf-8"))+"的地点！")
+                  self.say(u"抱歉，我找不到您附近有关"+Title+u"的地点。")
               else:
                   self.say("I'm sorry but I did not find any results for "+str(Title)+" near you!")
           self.complete_request()
