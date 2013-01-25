@@ -4,11 +4,6 @@
 
 from plugin import *
 import random
-import re
-import urllib2, urllib, uuid
-import json
-from urllib2 import urlopen
-from xml.dom import minidom
 
 class smalltalk(Plugin):
 

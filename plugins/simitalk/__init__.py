@@ -30,22 +30,12 @@ class SimiWorker:
                 return u'让我再想想。'
         else:
             return u'我没听清，可以再说一遍吗？'
-
-def respond(self, simiWorker, inputString):
-    if re.match(u'.*(结束|停止|闭嘴).*', inputString) != None:
-        self.say(u"那么不说了，拜拜，{0}。".format(self.user_name()))
-        self.complete_request()
-    else:
-        answer = self.ask(simiWorker.chat(inputString))
-        respond(self, simiWorker, answer)
-    self.complete_request()
                               
-class SimSimi(Plugin):
+class SimiTalk(Plugin):
 
-    @register("zh-CN", u".*(黄鸡|聊天|聊聊|说话|谈谈|谈话).*")
+    @register("zh-CN", u".*")
     def Simi_Message(self, speech, language):
         simiWorker = SimiWorker()
         if language == 'zh-CN':
-            answer = self.ask(u"好的，若不想聊了请说“结束聊天”或“停止聊天”。")
-            respond(self, simiWorker, answer)
+            self.say(simiWorker.chat(speech))
 	    self.complete_request()

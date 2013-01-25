@@ -145,7 +145,7 @@ class SiriProtocolHandler(Siri):
                         self.send_object(view)
                         self.send_object(RequestCompleted(requestId))
                 elif self.current_running_plugin.waitForResponse != None:
-                    # do we need to send a speech recognized here? i.d.k
+                    self.send_object(recognized)
                     self.current_running_plugin.response = best_match
                     self.current_running_plugin.refId = requestId
                     self.current_running_plugin.waitForResponse.set()

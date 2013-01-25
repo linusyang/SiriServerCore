@@ -71,7 +71,7 @@ class talkToMe(Plugin):
         elif language == 'zh-CN':
             self.say(u'博客已更新：')
             if status != None:
-                self.say(servertype, u'这是更新内容。')
+                self.say(status, u'这是更新内容。')
         else:
             self.say('Your blog is updated:')
             if status != None:
