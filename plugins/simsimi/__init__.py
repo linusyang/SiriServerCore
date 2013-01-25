@@ -21,7 +21,8 @@ class SimiWorker:
         self.url = 'http://www.simsimi.com/func/req?lc=ch&msg=%s'
 
     def chat(self, message=''):
-        if message.strip():
+        message = message.encode('utf-8').strip()
+        if message != '':
             try:
                 r = self.opener.open(self.url % message.strip()).read()
                 return json.loads(r)['response']
