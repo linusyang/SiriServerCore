@@ -626,40 +626,27 @@ class Location(DomainObject):
     
     def __init__(self, label=None, street=None, city=None, stateCode=None, countryCode=None, postalCode=None, latitude=None, longitude=None, accuracy=None, group="com.apple.ace.system", clazz="Location"):
         super(Location, self).__init__(group, None, clazz)
-        self.accuracy = None # @"NSNumber"
-        self.city = None # @"NSString"
-        self.countryCode = None # @"NSString"
-        self.entryPoints = None # @"NSArray"
-        self.label = None # @"NSString"
-        self.latitude = None # @"NSNumber"
-        self.longitude = None # @"NSNumber"
-        self.postalCode = None # @"NSString"
-        self.regionType = None # @"NSString"
-        self.relativeDistance = None # @"SADistance"
-        self.stateCode = None # @"NSString"
-        self.street = None # @"NSString"
-        self.subThoroughfare = None # @"NSString"
-        self.thoroughfare = None # @"NSString"
-        self.timezoneId = None # @"NSString"
-    
-    def to_plist(self):
-		self.add_property('accuracy')
-		self.add_property('city')
-		self.add_property('countryCode')
-		self.add_property('entryPoints')
-		self.add_property('label')
-		self.add_property('latitude')
-		self.add_property('longitude')
-		self.add_property('postalCode')
-		self.add_property('regionType')
-		self.add_property('relativeDistance')
-		self.add_property('stateCode')
-		self.add_property('street')
-		self.add_property('subThoroughfare')
-		self.add_property('thoroughfare')
-		self.add_property('timezoneId')
-		return super(Location, self).to_plist()
+        self.accuracy = accuracy # @"NSNumber"
+        self.city = city # @"NSString"
+        self.countryCode = countryCode # @"NSString"
+        self.label = label # @"NSString"
+        self.latitude = latitude # @"NSNumber"
+        self.longitude = longitude # @"NSNumber"
+        self.postalCode = postalCode # @"NSString"
+        self.stateCode = stateCode # @"NSString"
+        self.street = street # @"NSString"
 
+    def to_plist(self):
+        self.add_property('accuracy')
+        self.add_property('city')
+        self.add_property('countryCode')
+        self.add_property('label')
+        self.add_property('latitude')
+        self.add_property('longitude')
+        self.add_property('postalCode')
+        self.add_property('stateCode')
+        self.add_property('street')
+        return super(Location, self).to_plist()
 
 
 class Metrics(ServerBoundCommand):
